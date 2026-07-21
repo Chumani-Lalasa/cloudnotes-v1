@@ -8,19 +8,19 @@ load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
-DATABASE_PATH = os.environ.get("DATABASE_PATH", os.path.join(BASE_DIR, "database", "cloudnotes.db")) 
+DATABASE_URL = os.environ.get("DATABASE_URL") 
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-only-insecure-default-key")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["DATABASE_PATH"] = DATABASE_PATH
+app.config["DATABASE_URL"] = DATABASE_URL
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 
 app.register_blueprint(api_bp, url_prefix="/api")
 
 @app.before_first_request
 def startup():
-    init_db(DATABASE_PATH)
+    init_db(DATABASE_URL)
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route("/")
