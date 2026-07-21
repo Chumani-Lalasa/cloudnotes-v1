@@ -1,13 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from api.routes import api_bp
 from utils.helpers import init_db
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
-DATABASE_PATH = os.path.join(BASE_DIR, "database", "cloudnotes.db")
+DATABASE_PATH = os.environ.get("DATABASE_PATH", os.path.join(BASE_DIR, "database", "cloudnotes.db")) 
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", "dev-only-insecure-default-key")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["DATABASE_PATH"] = DATABASE_PATH
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
@@ -32,4 +36,4 @@ def uploaded_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)
