@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudnotes
+  labels:
+    app: cloudnotes
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloudnotes
+  template:
+    metadata:
+      labels:
+        app: cloudnotes
+    spec:
+      containers:
+        - name: cloudnotes
+          image: localhost:5001/cloudnotes:1.0.1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: cloudnotes-config
+            - secretRef:
+                name: cloudnotes-secret
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: cloudnotes-data
