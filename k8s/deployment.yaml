@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: cloudnotes
-          image: localhost:5001/cloudnotes:1.0.1
-          imagePullPolicy: Never
+          image: chumanim/cloudnotes:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
           envFrom:
